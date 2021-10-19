@@ -1,0 +1,72 @@
+.float-container {
+    border: 3px solid #fff;
+    padding: 20px;
+}
+
+.float-child-left {
+    width: 25%;
+    float: left;
+    padding: 20px;
+    border: 2px solid red;
+}
+
+.float-child {
+    width: 55%;
+    float: left;
+    padding: 20px;
+    border: 2px solid red;
+}
+
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 25px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+
+.button {
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  cursor: pointer;
+  margin:0 auto;
+  //display:block;
+  display:inline;
+  background-color: #4CAF50;
+}
+
+line {
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+

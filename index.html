@@ -1,0 +1,34 @@
+<html>
+<head>
+<title>Split Graphs</title>
+<link rel="stylesheet" href="styles.css">
+<script src="d3.v4.min.js"></script>
+<script src="split_graphs.js"></script>
+</head>
+<body>
+<div class="float-container">
+
+  <div class="float-child-left">
+    <div class="green">
+      <textarea id="input_text" name="w3review" rows="34" cols="50">
+        2
+        0--2
+        0--3
+        1--2
+        1--3
+      </textarea>
+      <button class="button" onclick="draw()">Draw</button>
+      <!--<button class="button" onclick="split()">Split</button>-->
+    </div>
+  </div>
+  
+  <div class="float-child">
+    <div class="blue">
+      <svg style="width:100%;height:500px;">
+      </svg>
+    </div>
+  </div>
+  
+</div>
+</body>
+</html>
