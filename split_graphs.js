@@ -1,3 +1,10 @@
+'use strict';
+
+var nodes;
+var edges;
+var orderTop;
+var orderBottom;
+
 function findMins(n_top, arr)
 {
   var min1 = -1;
@@ -98,9 +105,10 @@ function crossing_removal_k_split(n_top, adj, bottom_order, bottom_degree){
   delete adj[u];
   crossing_removal_k_split(n_top, adj, bottom_order, bottom_degree);
 }
-function draw()
+
+function process()
 {
-  d3.select("svg").selectAll("*").remove();
+  d3.select("#svgContainer").selectAll("*").remove();
   var txt = document.getElementById("input_text").value;
   var lines = txt.split('\n');
   var all_edges = [];
@@ -138,17 +146,20 @@ function draw()
   //for(var i=0;i<node_list.length;i++)
   var top_x = 300;
   var bot_x = 300;
+
+  var t = 0;
+  var b = 0;
   for(var i=0;i<all_nodes.length;i++)
   {
     //nodes.push({"label":all_nodes[i], "fx":fx[i], "fy":fy[i]});
     if(parseInt(all_nodes[i])<n_top)
     {
-      nodes.push({"label":all_nodes[i], "fx":top_x, "fy":100});
+      nodes.push({"label":all_nodes[i], "fx":top_x, "fy":100, 'layer': 0, 'index': t++});
       top_x += 200;
     }
     else
     {
-      nodes.push({"label":all_nodes[i], "fx":bot_x, "fy":300});
+      nodes.push({"label":all_nodes[i], "fx":bot_x, "fy":300, 'layer': 1, 'index': b++});
       bot_x += 200;
     }
   }
@@ -167,48 +178,52 @@ function draw()
   console.log(all_edges);
 
   //var manyBody = d3.forceManyBody().strength(-50 * stability);
-  var manyBody = d3.forceManyBody().strength(-50);
-  //var forceLink = d3.forceLink().strength(stability);
-  var forceLink = d3.forceLink();
-  var center = d3.forceCenter().x(width/2).y(height/2);
+  // var manyBody = d3.forceManyBody().strength(-50);
+  // //var forceLink = d3.forceLink().strength(stability);
+  // var forceLink = d3.forceLink();
+  // var center = d3.forceCenter().x(width/2).y(height/2);
 
-  var simulation = d3.forceSimulation()
-   .force("charge", manyBody)
-   .force("center", center)
-   .force("link", forceLink)
-   .nodes(nodes)
-   .on("tick", updateNetwork);  
-  window.simulation = simulation;
+  // var simulation = d3.forceSimulation()
+  //  .force("charge", manyBody)
+  //  .force("center", center)
+  //  .force("link", forceLink)
+  //  .nodes(nodes)
+  //  .on("tick", updateNetwork);  
+  // window.simulation = simulation;
 
-  //simulation.force("link").links(edge_list);
-  simulation.force("link").links(all_edges);
+  // //simulation.force("link").links(edge_list);
+  // simulation.force("link").links(all_edges);
 
-  d3.select("svg")
-   .selectAll("circle")
-   .data(nodes)
-   .enter()
-   .append("circle")
-   .style("fill", "red")
-   .attr("r", 5);
+  // d3.select("#svgContainer")
+  //  .selectAll("circle")
+  //  .data(nodes)
+  //  .enter()
+  //  .append("circle")
+  //  .style("fill", "red")
+  //  .attr("r", 5);
 
-  d3.select("svg").selectAll("line.link")
-   //.data(edge_list, d => `${d.source_label}-${d.target_label}`) .enter()
-   .data(all_edges, d => `${d.source_label}-${d.target_label}`) .enter()
-   .append("line")
-   .attr("class", "link")
-   .style("opacity", .5)
-   .style("stroke-width", d => d.weight);
+  // d3.select("#svgContainer").selectAll("line.link")
+  //  //.data(edge_list, d => `${d.source_label}-${d.target_label}`) .enter()
+  //  .data(all_edges, d => `${d.source_label}-${d.target_label}`) .enter()
+  //  .append("line")
+  //  .attr("class", "link")
+  //  .style("opacity", .5)
+  //  .style("stroke-width", d => d.weight);
 
-  function updateNetwork() {
-   d3.selectAll("circle")
-     .attr("cx", d => d.x)
-     .attr("cy", d => d.y);
-   d3.selectAll("line.link")
-     .attr("x1", d => d.source.x)
-     .attr("x2", d => d.target.x)
-     .attr("y1", d => d.source.y)
-     .attr("y2", d => d.target.y);
-  }
+  // function updateNetwork() {
+  //  d3.selectAll("circle")
+  //    .attr("cx", d => d.x)
+  //    .attr("cy", d => d.y);
+  //  d3.selectAll("line.link")
+  //    .attr("x1", d => d.source.x)
+  //    .attr("x2", d => d.target.x)
+  //    .attr("y1", d => d.source.y)
+  //    .attr("y2", d => d.target.y);
+  // }
+
+  console.log('start drawing')
+  drawGraph(nodes, all_edges);
+  drawBrush(nodes, all_edges);
 
   var bottom_order = [];
   var bottom_degree = [];
@@ -238,7 +253,7 @@ function addEdge()
     simulation.force("link").links(oldEdges);
     simulation.nodes(oldNodes);
 
-    d3.select("svg")
+    d3.select("#svgContainer")
      .selectAll("circle")
      .data(oldNodes)
      .enter()
@@ -246,7 +261,7 @@ function addEdge()
      .style("fill", "red")
      .attr("r", 5);
 
-    d3.select("svg").selectAll("line.link")
+    d3.select("#svgContainer").selectAll("line.link")
      .data(oldEdges, d => `${d.source_label}-${d.target_label}`) .enter()
      .append("line")
      .attr("class", "link")
@@ -264,7 +279,7 @@ function addEdge()
 
 function split()
 {
-  d3.select("svg").selectAll("*").remove();
+  d3.select("#svgContainer").selectAll("*").remove();
   var txt = "1--3\n1--4\n2--3\n2--5";
   var lines = txt.split('\n');
   var all_edges = [];
@@ -287,7 +302,7 @@ function split()
   window.all_edges = all_edges;
   //console.log(edge_list);
   //console.log(node_list);
-  var svg = d3.select("svg");
+  var svg = d3.select("#svgContainer");
   var width = 952,
     height = 500;
 
@@ -330,7 +345,7 @@ function split()
   //simulation.force("link").links(edge_list);
   simulation.force("link").links(all_edges);
 
-  d3.select("svg")
+  d3.select("#svgContainer")
    .selectAll("circle")
    .data(nodes)
    .enter()
@@ -338,7 +353,7 @@ function split()
    .style("fill", "red")
    .attr("r", 5);
 
-  d3.select("svg").selectAll("line.link")
+  d3.select("#svgContainer").selectAll("line.link")
    //.data(edge_list, d => `${d.source_label}-${d.target_label}`) .enter()
    .data(all_edges, d => `${d.source_label}-${d.target_label}`) .enter()
    .append("line")
@@ -357,5 +372,213 @@ function split()
      .attr("y2", d => d.target.y);
   }
 
+
+}
+
+//Draw Function
+
+//TODO
+const minX = 0;
+const maxX = 2; 
+
+var xScale;
+var yScale;
+var xScaleContext;
+var yScaleContext;
+var focus;
+var context;
+var left;
+/**
+ * Function to draw the graph 
+ * 
+ * @param {list[objects]} nodes 
+ * @param {list[objects]} edges 
+ */
+
+ function drawGraph(nodes, edges) {
+  var clientWidth = document.getElementById('svgContainer').clientWidth;
+  var clientHeight = document.getElementById('svgContainer').clientHeight;
+
+  var top = clientHeight * 0.2;
+  var bottom = clientHeight * 0.8;
+
+  left = clientWidth * 0.02;
+  var right = clientWidth * 0.98;
+
+  var lMin = d3.min(nodes, d => d['layer']);
+  var lMax = d3.max(nodes, d => d['layer']);
+
+  //TODO
+  xScale = d3.scaleLinear().domain([minX, maxX]).range([left, right]);
+  yScale = d3.scaleLinear().domain([lMin, lMax]).range([top, bottom]);
+
+  //uncomment for free zoom
+  //svg = d3.select("#svgContainer")
+  // .call(d3.zoom().on('zoom', function (event) {
+  //   svg.attr('transform', event.transform)
+  // }))
+  // .call(d3.zoom().transform, d3.zoomIdentity.translate(0, 0).scale(1))
+  //.append('g')
+
+  focus = d3.select("#svgContainer")
+
+  var layer2 = focus
+  .append('g')
+
+  var layer1 = focus
+  .append('g')
+
+
+  layer1
+    .selectAll(".node")
+    .data(nodes)
+    .enter()
+    .append("circle")
+    .attr('class', 'node')
+    .attr("r", 5)
+    .attr('cx', d => xScale(d.index))
+    .attr('cy', d => yScale(d.layer))
+    .style("fill", "red");
+
+  layer2
+    .selectAll('.edge')
+    .data(edges)
+    .enter()
+    .append('line')
+    .attr('class', 'edge')
+    .attr('x1', d => xScale(d.source.index))
+    .attr('x2', d => xScale(d.target.index))
+    .attr('y1', d => yScale(d.source.layer))
+    .attr('y2', d => yScale(d.target.layer))
+    .style("opacity", 1.0)
+    .style("stroke-width", d => d.weight);
+
+  layer1
+    .selectAll('.label')
+    .data(nodes)
+    .enter()
+    .append('text')
+    .attr('class', 'label')
+    .attr('x', d => xScale(d.index) + 10)
+    .attr('y', d => yScale(d.layer))
+    .html(d => d.label)
+    .style('shape-rendering', 'crisp-edges')
+    .style('stroke', 'none')
+    .style('font-size', 12)
+}
+
+function drawBrush(nodes, edges) {
+  var clientWidth = document.getElementById('brushContainer').clientWidth;
+  var clientHeight = document.getElementById('brushContainer').clientHeight;
+
+  var margin = clientHeight * 0.05
+  var top = clientHeight * 0.2;
+  var bottom = clientHeight * 0.8;
+
+  var left = clientWidth * 0.02;
+  var right = clientWidth * 0.98;
+
+  var lMin = d3.min(nodes, d => d['layer']);
+  var lMax = d3.max(nodes, d => d['layer']);
+
+  xScaleContext = d3.scaleLinear().domain([minX, maxX]).range([left, right]);
+  yScaleContext = d3.scaleLinear().domain([lMin, lMax]).range([top, bottom]);
+
+  console.log(edges)
+
+  var brush = d3.brushX()
+  .extent([[margin, 0], [clientWidth - margin, clientHeight]])
+  .on("brush", brushed)
+  .on('end', brushedEnd)
+
+
+  context = d3.select("#brushContainer")
+
+  var layer2 = context
+  .append('g')
+
+  var layer1 = context
+  .append('g')
+
+
+  layer1
+    .selectAll(".node")
+    .data(nodes)
+    .enter()
+    .append("circle")
+    .attr('class', 'node')
+    .attr("r", 5)
+    .attr('cx', d => xScaleContext(d.index))
+    .attr('cy', d => yScaleContext(d.layer))
+    .style("fill", "grey");
+
+  layer2
+    .selectAll('.edge')
+    .data(edges)
+    .enter()
+    .append('line')
+    .attr('class', 'edge')
+    .attr('x1', d => xScaleContext(d.source.index))
+    .attr('x2', d => xScaleContext(d.target.index))
+    .attr('y1', d => yScaleContext(d.source.layer))
+    .attr('y2', d => yScaleContext(d.target.layer))
+    .style("opacity", 1.0)
+    .style("stroke-width", d => d.weight);
+
+  context
+  .append('g')
+  .call(brush)
+  .call(brush.move, xScaleContext)
+
+}
+
+function brushed(event) { 
+  const selection = event.selection;
+  var circle = context.selectAll('.node');
+  
+  if (selection === null) {
+    circle.attr("stroke", null);
+  } else {
+    const [x0, x1] = selection.map(xScaleContext.invert);
+    circle.attr("stroke", d => x0 <= d.index && d.index <= x1 ? "red" : null);
+
+
+  }
+}
+
+function brushedEnd(event) { 
+  const selection = event.selection;
+
+  if (selection === null) {
+    xScale.domain([minX, maxX]);
+
+    context.selectAll('.node').attr("stroke", null);
+
+  } else {
+    selection[0] = selection[0]
+    selection[1] = selection[1]
+    const [x0, x1] = selection.map(xScaleContext.invert);
+    xScale.domain([x0, x1]);
+  }
+
+  focus.selectAll(".node")
+      .transition()
+      .duration(1000)
+      .attr("cx", function (d) { return xScale(d.index); } )
+
+  focus.selectAll(".edge")
+      .transition()
+      .duration(1000)
+      .attr('x1', d => xScale(d.source.index))
+      .attr('x2', d => xScale(d.target.index))
+
+  focus.selectAll(".label")
+      .transition()
+      .duration(1000)
+      .attr('x', d => xScale(d.index) + 10)
+  
+}
+
+function addInteractivity() {
 
 }
