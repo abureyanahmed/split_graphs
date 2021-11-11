@@ -25,6 +25,7 @@ function readGraphML(graph) {
 		n.neighbours = [];
 		n.nAbove = [];
 		n.nBelow = [];
+		n.label = n.id;
 	});
 	
 	edges.forEach(e => {

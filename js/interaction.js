@@ -4,7 +4,7 @@ function click_split() {
 
 var graph;
 function click_load() {
-    d3.json('./data/test_3l.json').then(function(data){
+    d3.json('./data/test.json').then(function(data){
         graph = readGraphML(data);
     }).then(function(){
         posByOrder(graph.layers[0]);
@@ -13,7 +13,13 @@ function click_load() {
             posByNeighboursBelow(graph.layers[i])
         }
     }).then(function() {
-        console.log(graph);
         draw(graph.nodes, graph.edges);
     });
+}
+
+function click_barycenter() {
+    console.log(graph);
+    barycenter(graph.layers, 10);
+
+    draw(graph.nodes, graph.edges);
 }

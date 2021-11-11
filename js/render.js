@@ -7,8 +7,15 @@ var yScaleContext;
 var focus;
 var context;
 var left;
+var xMin, xMax;
 
 function draw(nodes, edges) {
+    xMin = d3.min(nodes, d => d['x']);
+    xMax = d3.max(nodes, d => d['x']);
+
+    d3.select("#brushContainer").empty();
+    d3.select('#svgContainer').empty();
+
     drawGraph(nodes, edges);
     drawBrush(nodes, edges);
 }
@@ -32,11 +39,6 @@ function draw(nodes, edges) {
   
     var lMin = d3.min(nodes, d => d['layer']);
     var lMax = d3.max(nodes, d => d['layer']);
-
-    var xMin = d3.min(nodes, d => d['x']);
-    var xMax = d3.max(nodes, d => d['x']);
-  
-    console.log(nodes, xMin, xMax, left, right, top, bottom)
 
     //TODO
     xScale = d3.scaleLinear().domain([xMin, xMax]).range([left, right]);
@@ -76,18 +78,18 @@ function draw(nodes, edges) {
       .style("opacity", 1.0)
       .style("stroke-width", d => d.weight);
   
-    layer1
-      .selectAll('.label')
-      .data(nodes)
-      .enter()
-      .append('text')
-      .attr('class', 'label')
-      .attr('x', d => xScale(d.x) + 10)
-      .attr('y', d => yScale(d.layer))
-      .html(d => d.label)
-      .style('shape-rendering', 'crisp-edges')
-      .style('stroke', 'none')
-      .style('font-size', 12)
+    // layer1
+    //   .selectAll('.label')
+    //   .data(nodes)
+    //   .enter()
+    //   .append('text')
+    //   .attr('class', 'label')
+    //   .attr('x', d => xScale(d.x) + 10)
+    //   .attr('y', d => yScale(d.layer))
+    //   .html(d => d.label)
+    //   .style('shape-rendering', 'crisp-edges')
+    //   .style('stroke', 'none')
+    //   .style('font-size', 12)
   }
   
   function drawBrush(nodes, edges) {
@@ -103,15 +105,10 @@ function draw(nodes, edges) {
   
     var lMin = d3.min(nodes, d => d['layer']);
     var lMax = d3.max(nodes, d => d['layer']);
-
-    var xMin = d3.min(nodes, d => d['x']);
-    var xMax = d3.max(nodes, d => d['x']);
   
     xScaleContext = d3.scaleLinear().domain([xMin, xMax]).range([left, right]);
     yScaleContext = d3.scaleLinear().domain([lMax, lMin]).range([top, bottom]);
-  
-    console.log(edges)
-  
+   
     var brush = d3.brushX()
     .extent([[margin, 0], [clientWidth - margin, clientHeight]])
     .on("brush", brushed)
@@ -174,7 +171,7 @@ function draw(nodes, edges) {
     const selection = event.selection;
   
     if (selection === null) {
-      xScale.domain([minX, maxX]);
+      xScale.domain([xMin, xMax]);
   
       context.selectAll('.node').attr("stroke", null);
   
