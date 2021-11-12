@@ -57,3 +57,42 @@ function barycenter(layers, iterations) {
 
     console.log(layers);
 }
+
+/**
+ * 
+ */
+
+function CrossingNumber(layers) {
+
+
+    for (var i = 1; i < layers.length; i++) {
+        layer_0 = layers[i -1];
+        layer_1 = layers[i];
+
+        edges = []
+
+        layer.forEach(node => {
+            node.nBelow.forEach(nB => {
+                edge = {};
+                edge['xt'] = node['x'];
+                edge['xb'] = nB['x'];
+                edges.push(edge);
+            })
+        });
+
+        edges.sort((a, b) => a['x'] - b['x']);
+        
+
+        var i0 = 0;
+        var i1 = 0;
+
+        var x = Math.min(layer_0[0], layer_1[0]);
+
+        
+        
+        while (i0 < layer_0.length && i1 < layer_1.length) {
+
+        }
+    }
+
+}
