@@ -4,7 +4,7 @@ function click_split() {
 
 var graph;
 function click_load() {
-    d3.json('./data/test.json').then(function(data){
+    d3.json('./data/test_small.json').then(function(data){
         graph = readGraphML(data);
     }).then(function(){
         posByOrder(graph.layers[0]);
@@ -22,4 +22,8 @@ function click_barycenter() {
     barycenter(graph.layers, 10);
 
     draw(graph.nodes, graph.edges);
+}
+
+function click_crossings() {
+    numberCrossings(graph.layers);
 }

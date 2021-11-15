@@ -9,6 +9,23 @@ function posByOrder(nodes) {
     });
 }
 
+function posByIndex(nodes) {
+    var index = 0;
+    nodes.forEach((node) => {
+
+        while(true) {
+            if (index >= node['x']) {
+                node['x'] = index;
+                index++;
+                console.log('break')
+                break
+            } else {
+                index++;
+            }
+        }
+    });    
+}
+
 function posByNeighboursBelow(nodes) {
     nodes.forEach(node => {
         if (node.nBelow.length <= 0)
@@ -34,65 +51,79 @@ function posByNeighboursAbove(nodes) {
  * @param {int} iterations
  */
 function barycenter(layers, iterations) {
-    console.log(layers);
-    posByOrder(layers[0]);
+    // console.log(layers);
+    // posByOrder(layers[0]);
 
     for(var i = 0; i < iterations; i++) {
+        layers[0].sort((a, b) => a['x'] - b['x']);
+        posByOrder(layers[0]);
 
         for(var x = 1; x < layers.length; x++) {
             posByNeighboursBelow(layers[x]);
         }
 
-        for(var x = layers.length - 1; x >= 0; x--) {
+        for(var x = layers.length - 2; x >= 0; x--) {
             posByNeighboursAbove(layers[x]);
         }
     }
+    //console.log(layers);
+    
+    layers[0].sort((a, b) => a['x'] - b['x']);
+    posByOrder(layers[0]);
 
-    console.log(layers);
-
-    for(var i = 0; i < layers.length; i++) {
+    for(var i = 1; i < layers.length; i++) {
         layers[i].sort((a, b) => a['x'] - b['x']);
-        posByOrder(layers[i]);
+        posByIndex(layers[i])
     }
 
-    console.log(layers);
+    // console.log(layers);
 }
 
-/**
+/** calculate the number of crossings for each layer pair and return a list of crossings (in layer order).
  * 
  */
 
-function CrossingNumber(layers) {
+function numberCrossings(layers) {
 
-
+    var crossings = [] 
     for (var i = 1; i < layers.length; i++) {
         layer_0 = layers[i -1];
         layer_1 = layers[i];
 
-        edges = []
+        var edges = []
 
-        layer.forEach(node => {
+        var i = 0;
+        layer_1.forEach(node => {
             node.nBelow.forEach(nB => {
-                edge = {};
-                edge['xt'] = node['x'];
-                edge['xb'] = nB['x'];
+                var edge = {};
+                edge['left'] = Math.min(node['x'], nB['x']);
+                edge['right'] = Math.max(node['x'], nB['x']);
+                edge['id'] = i++;
                 edges.push(edge);
             })
         });
 
-        edges.sort((a, b) => a['x'] - b['x']);
+        edges.sort((a, b) => a['left'] - b['left'] || a['right'] - b['right']);
         
+        var crossing = 0;
+        for(var i = 0; i < edges.length; i++) {
+            var e1 = edges[i];
+            for(var j = i + 1; j < edges.length; j++) {
+                var e2 = edges[j];
+                if (e1['left'] == e2['left'])
+                    continue;
 
-        var i0 = 0;
-        var i1 = 0;
-
-        var x = Math.min(layer_0[0], layer_1[0]);
-
-        
-        
-        while (i0 < layer_0.length && i1 < layer_1.length) {
-
+                if (e1['right'] >= e2['right']){
+                    break;
+                }
+                else{
+                    crossing++;
+                }
+            }
         }
+
+        crossings.push(crossing);
     }
 
+    return crossings
 }

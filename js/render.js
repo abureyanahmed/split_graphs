@@ -13,8 +13,8 @@ function draw(nodes, edges) {
     xMin = d3.min(nodes, d => d['x']);
     xMax = d3.max(nodes, d => d['x']);
 
-    d3.select("#brushContainer").empty();
-    d3.select('#svgContainer').empty();
+    d3.selectAll("#brushContainer > *").remove();
+    d3.selectAll('#svgContainer > *').remove();
 
     drawGraph(nodes, edges);
     drawBrush(nodes, edges);
