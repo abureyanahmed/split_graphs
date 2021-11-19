@@ -112,6 +112,8 @@ function crossing_removal_k_split(top_start, n_top, adj, bottom_order, bottom_de
   crossing_removal_k_split(top_start+1, n_top, adj, bottom_order, bottom_degree, reuse_last_bot);
   console.log("bot degree end", JSON.stringify(bottom_degree));
 }
+
+
 function get_next_layer(cur_layer, edges, nodes)
 {
   var next_layer = new Set();
@@ -127,6 +129,8 @@ function get_next_layer(cur_layer, edges, nodes)
   }
   return next_layer;
 }
+
+
 function transfer_id(source_ids, target_ids, edges)
 {
   var org_to_consecutive = {};
