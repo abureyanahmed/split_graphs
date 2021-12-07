@@ -1,0 +1,43 @@
+<html>
+<head>
+<title>Split Graphs</title>
+<link rel="stylesheet" href="styles.css">
+<script src="d3.v4.min.js"></script>
+<script src="split_graphs.js"></script>
+</head>
+<body>
+<div class="float-container">
+
+  <div class="float-child-left">
+    <div class="green">
+
+      <textarea id="input_text" name="w3review" rows="34" cols="50"></textarea>
+
+      <p>Left layer:</p>
+      <input type="radio" id="blue_vertices" value="BLUE_VERTICES" name="layer_selection" checked>
+      <label>Blue vertices</label>
+      <input type="radio" id="green_vertices" value="GREEN_VERTICES" name="layer_selection">
+      <label for="green_vertices">Green vertices</label><br><br>
+
+      <p>Order:</p>
+      <input type="radio" id="alphabetical_order" value="alphabetical_order" name="order_selection" checked>
+      <label>Alphabetical order</label>
+      <input type="radio" id="barycentric_order" value="barycentric_order" name="order_selection">
+      <label for="barycentric_order">Barycentric order</label><br><br>
+
+      <button class="button" onclick="draw()">Draw</button>
+      <button class="button" onclick="split()">Split</button>
+    </div>
+  </div>
+  
+  <div class="float-child" style="overflow-x: scroll;">
+    <div class="blue">
+      <!--<svg style="width:100%;height:500px;">-->
+      <svg style="width:2000px;height:500px;">
+      </svg>
+    </div>
+  </div>
+  
+</div>
+</body>
+</html>
