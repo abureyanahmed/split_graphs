@@ -25,6 +25,16 @@ function click_barycenter() {
 }
 
 function click_crossings() {
+    var crossings = naiveNumberCrossings(graph.layers);
+    console.log(crossings)
     var crossings = numberCrossings(graph.layers);
     console.log(crossings)
+}
+
+function click_k_crossings() {
+    k_CR_maxSpan(graph, 1, 1);
+    console.log(graph.layers)
+    barycenter(graph.layers, 10);
+
+    draw(graph.nodes, graph.edges);
 }

@@ -3,6 +3,12 @@
 * Function that returns the layers of a graph
 *
 */
+
+var maxId = 0;
+function getNewId() {
+	return maxId++;
+}
+
 function readGraphML(graph) {
 
 	var nodes = graph.nodes;
@@ -26,6 +32,7 @@ function readGraphML(graph) {
 		n.nAbove = [];
 		n.nBelow = [];
 		n.label = n.id;
+		maxId = Math.max(maxId, n.id);
 	});
 	
 	edges.forEach(e => {
@@ -50,10 +57,18 @@ function readGraphML(graph) {
 	return {'nodes': nodes, 'edges': edges, 'layers': layers}
 }
 
-function barycenter(graph) {
+function redoEdges(graph) {
+	edges = [];
+	for(var i = 0; i < graph.layers.length; i++) {
+		graph.layers[i].forEach(n => {
+			n.nAbove.forEach(nB => {
+				var e = {};
+				e.source = n;
+				e.target = nB;
+				edges.push(e);
+			});
+		});
+	}
 
-	var layers = graph.layers
-	
-	
-
+	graph.edges = edges;
 }

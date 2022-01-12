@@ -83,6 +83,49 @@ function barycenter(layers, iterations) {
  * 
  */
 
+function naiveNumberCrossings(layers) {
+  var crossings = [] 
+
+  for (var i = 1; i < layers.length; i++) {
+    layer_0 = layers[i -1];
+    layer_1 = layers[i];
+
+    var edges = [];
+
+    layer_1.forEach(node => {
+      node.nBelow.forEach(nB => {
+        var edge = {};
+        edge['upper'] = node['x'];
+        edge['lower'] = nB['x'];
+        edge['u'] = node;
+        edge['v'] = nB;
+        edges.push(edge);
+      });
+    });
+
+    var crossing = 0;
+    for( var j = 0; j < edges.length; j++) {
+      for (var k = j + 1; k < edges.length; k++) {
+        e1 = edges[j];
+        e2 = edges[k];
+
+        if (e1['u'] == e2['u'] || e1['v'] == e2['v'])
+          continue;
+
+        if (e1['upper'] < e2['upper'] && e1['lower'] > e2['lower'])
+          crossing += 1
+        else if (e1['upper'] > e2['upper'] && e1['lower'] < e2['lower'])
+          crossing += 1
+      
+      }
+    }
+
+    crossings.push(crossing)
+  }
+
+  return crossings
+}
+
 function numberCrossings(layers) {
 
     var crossings = [] 
@@ -146,6 +189,111 @@ function numberCrossings(layers) {
     return crossings
 }
 
+function k_CR_maxSpan(graph, i, K) {
+
+  layer_1 = graph.layers[i];
+  layer_0 = graph.layers[i - 1];
+
+  var maxSpan = 0;
+  var maxNode = 0;
+
+  for(var k = 0; k < K; k++) {
+    
+    layer_0.forEach(node => {
+      var min = 100000;
+      var max = -100000;
+      
+      node.nAbove.forEach(nB => { 
+        var x = nB['x'];
+
+        min = Math.min(min, x);
+        max = Math.max(max, x);
+      });
+
+      var span = max - min;
+      // console.log(node['id'], span, min, max)
+      node['span'] = span;
+
+      if (span > maxSpan) {
+        maxSpan = span;
+        maxNode = node;
+      }
+    });
+
+    maxNode.nAbove.sort((a, b) => a['x'] - b['x'])
+
+    var l = maxNode.nAbove.length;
+    var min = maxNode.nAbove[0]['x'];
+    var max = maxNode.nAbove[l - 1]['x'];
+
+    var sqSpan = 10000000;
+    var bestIndex = 0;
+
+    for(var i = 1; i < l; i++) {
+      var span1 = maxNode.nAbove[i - 1]['x'] - min;
+      var span2 = max - maxNode.nAbove[i]['x'];
+
+      console.log(i, span1, span2);
+      var val = span1 * span1 + span2 * span2
+
+      if(sqSpan > val) {
+        sqSpan = val;
+        bestIndex = i;
+      }
+    }
+
+    left = Object.assign({}, maxNode);
+    right = Object.assign({}, maxNode);
+
+    left.id = getNewId();
+    right.id = getNewId();
+    
+    left.nAbove = [];
+    left.nBelow = [];
+    right.nAbove = [];
+    right.nBelow = [];
+
+    maxNode.nAbove.forEach((n, i) => {
+        if(i < bestIndex) {
+          left.nAbove.push(n);
+          n.nBelow = arrayRemove(n.nBelow, maxNode);
+          n.nBelow.push(left)
+        } else {
+          right.nAbove.push(n);
+          n.nBelow = arrayRemove(n.nBelow, maxNode);
+          n.nBelow.push(right);
+        }
+    });
+
+    maxNode.nBelow.forEach(n => {
+      left.nBelow.push(n);
+      right.nBelow.push(n);
+    });
+
+    // console.log(sqSpan, bestIndex)
+    // console.log(left)
+    // console.log(right)
+    // console.log(maxNode);
+
+    graph.nodes = arrayRemove(graph.nodes, maxNode);
+    graph.nodes.push(left);
+    graph.nodes.push(right);
+
+
+    layer_0 = arrayRemove(layer_0, maxNode);
+    layer_0.push(left);
+    layer_0.push(right);
+  }
+
+  redoEdges(graph);
+}
+
+function arrayRemove(arr, value) { 
+    
+  return arr.filter(function(ele){
+      return ele != value; 
+  });
+}
 
 function delete_val(dict, val)
 {
