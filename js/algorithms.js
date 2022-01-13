@@ -140,47 +140,33 @@ function numberCrossings(layers) {
         layer_1.forEach(node => {
             node.nBelow.forEach(nB => {
                 var edge = {};
-                edge['left'] = Math.min(node['x'], nB['x']);
-                edge['right'] = Math.max(node['x'], nB['x']);
+                edge['top'] = node['x'];
+                edge['bottom'] = nB['x'];
                 edge['id'] = i++;
                 edges.push(edge);
 
-                max = Math.max(edge['right'], max);
+                max = Math.max(edge['bottom'], Math.max(edge['top'], max));
             });
         });
 
-        edges.sort((a, b) => a['left'] - b['left'] || a['right'] - b['right']);
+        edges.sort((a, b) => a['top'] - b['top'] || a['bottom'] - b['bottom']);
         
         console.log(edges)
         var crossing = 0;
-        // for(var i = 0; i < edges.length; i++) {
-        //     var e1 = edges[i];
-        //     for(var j = i + 1; j < edges.length; j++) {
-        //         var e2 = edges[j];
-        //         if (e1['left'] == e2['left'])
-        //             continue;
-
-        //         if (e1['right'] <= e2['right']){
-        //             break;
-        //         }
-        //         else{
-        //             console.log(e1.right, e2.right, e1['right'] >= e2['right'])
-        //             crossing++;
-        //         }
-        //     }
-        // }
-
-        var biTree = new BinaryIndexedTree({defaultFrequency: 0, maxVal: edges.length});
+        var biTree = new BinaryIndexedTree({defaultFrequency: 0, maxVal: max + 2});
 
         for(var i = 0; i < edges.length; i++) {
             var e1 = edges[i];
+            // console.log(e1)
             
-            var val3 = biTree.readSingle(2);
+            //var val3 = biTree.readSingle(2);
             
-            console.log(i, lower, i - lower);
-
-            biTree.writeSingle(i, 1);
-            crossing += i - lower
+            //console.log(i, lower, i - lower);
+            biTree.update(e1['bottom'], 1);
+            var lower = biTree.read(e1['bottom'] + 1);
+            var upper = biTree.read(max + 1);
+            // console.log(val1, val2, val3 - val4)
+            crossing += upper - lower;
         }
 
         crossings.push(crossing);
@@ -189,10 +175,10 @@ function numberCrossings(layers) {
     return crossings
 }
 
-function k_CR_maxSpan(graph, i, K) {
+function k_CR_maxSpan(graph, L, K) {
 
-  layer_1 = graph.layers[i];
-  layer_0 = graph.layers[i - 1];
+  layer_1 = graph.layers[L];
+  layer_0 = graph.layers[L - 1];
 
   var maxSpan = 0;
   var maxNode = 0;
@@ -285,7 +271,83 @@ function k_CR_maxSpan(graph, i, K) {
     layer_0.push(right);
   }
 
+  graph.layers[L] = layer_1;
+  graph.layers[L - 1] = layer_0;
   redoEdges(graph);
+  console.log(layer_0,graph)
+
+  return graph
+}
+
+function k_CR_maxCross(graph, L, K) {
+
+  layer_1 = graph.layers[L];
+  layer_0 = graph.layers[L - 1];
+
+  var maxCross = 0;
+  var maxNode = 0;
+
+  for(var k = 0; k < K; k++) {
+    crossings = {}
+    
+    edges = []
+    layer_0.forEach(node => {
+      crossings[node['id']] = {};
+      node.nAbove.forEach(nB => {
+            crossings[node['id']][nB['id']] = 0;
+            var edge = {};
+            edge['top'] = nB['x'];
+            edge['bottom'] = node['x'];
+            edge['idTop'] = nB['id'];
+            edge['idBottom'] = node['id'];
+            edges.push(edge);
+
+            // max = Math.max(edge['bottom'], Math.max(edge['top'], max));
+        });
+    });
+
+    edges.sort((a, b) => a['bottom'] - b['bottom'] || a['top'] - b['top']);
+
+    edges.forEach((edge, i) => {
+      console.log(edge)
+      var idTop = edge['idTop'];
+      var idBottom = edge['idBottom'];
+
+      var top = edge['top'];
+      var bottom = edge['bottom'];
+
+      if(top > bottom) {
+        for(var j = i + 1; i < edges.length; i++) {
+          var e2 = edges[j];
+
+          if(e2['top'] > top) 
+            break;
+
+          if(e2['bottom'] < top)
+            crossings[idBottom][idTop] += 1;
+        }
+      } else {
+        for(var j = i - 1; i >= 0; i--) {
+          var e2 = edges[j];
+
+          if(e2['top'] < top) 
+            break;
+
+          if(e2['bottom'] > top)
+            crossings[idBottom][idTop] += 1;
+        }
+      }
+    });
+
+    console.log(crossings)
+  }
+
+  // graph.layers[L] = layer_1;
+  // graph.layers[L - 1] = layer_0;
+  // redoEdges(graph);
+  // console.log(layer_0,graph)
+
+  return graph
 }
 
 function arrayRemove(arr, value) { 

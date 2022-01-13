@@ -32,7 +32,8 @@ function click_crossings() {
 }
 
 function click_k_crossings() {
-    k_CR_maxSpan(graph, 1, 1);
+    //k_CR_maxSpan(graph, 1, 1);
+    k_CR_maxCross(graph, 1, 1);
     console.log(graph.layers)
     barycenter(graph.layers, 10);
 
