@@ -306,7 +306,7 @@ function k_CR_maxCross(graph, L, K) {
         });
     });
 
-    edges.sort((a, b) => a['bottom'] - b['bottom'] || a['top'] - b['top']);
+    edges.sort((a, b) => a['top'] - b['top'] || a['bottom'] - b['bottom']);
 
     edges.forEach((edge, i) => {
       console.log(edge)
