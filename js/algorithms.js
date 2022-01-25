@@ -445,12 +445,12 @@ function k_CR_maxCross(graph, L, K) {
             leftBary += nb['x'];
             rightBary -= nb['x'];
 
-            var crossingNum = 0;
+            var crossingAvoid = 0;
 
             var nLeft = i + 1;
             var nRight = node.nAbove.length - nLeft; 
 
-            console.log(node['x'], nb['x'], leftBary / nLeft, rightBary / nRight)
+            console.log(node['x'], nb['x'], nLeft, nRight, leftBary / nLeft, rightBary / nRight)
 
             var curPos = node['x'];
             var curInd = ind + 1;
@@ -460,18 +460,27 @@ function k_CR_maxCross(graph, L, K) {
 
             while(curPos < rightBary && curInd < layer_0.length) {
 
-              var next = layer_0[curInd];
+              var next = layer_0[curInd++];
 
               next.nAbove.forEach(nextNb => {
                   var x = nextNb['x'];
 
                   if (x < rightBegin) {
-                    crossingNum += nRight;
-                  } else if (x < rightEnd) {
-                    
+                    crossingAvoid += nRight;
+                    console.log('avoiding all right crossings', nRight);
+                  } else if (x <= rightEnd) {
+                    for(var count = 0; count < nRight; count++) {
+                      if(x > node.nAbove[nLeft + count]['x']) {
+                        break;
+                      }
+                    }
+
+                    crossingAvoid += nRight - count + 1;
+                    console.log('avoiding some right crossings', nRight - count + 1);
                   }
               });
 
+              curPos = next['x']
             }
 
           }
