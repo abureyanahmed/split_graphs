@@ -78,18 +78,19 @@ function draw(nodes, edges) {
       .style("opacity", 1.0)
       .style("stroke-width", d => d.weight);
   
-    // layer1
-    //   .selectAll('.label')
-    //   .data(nodes)
-    //   .enter()
-    //   .append('text')
-    //   .attr('class', 'label')
-    //   .attr('x', d => xScale(d.x) + 10)
-    //   .attr('y', d => yScale(d.layer))
-    //   .html(d => d.label)
-    //   .style('shape-rendering', 'crisp-edges')
-    //   .style('stroke', 'none')
-    //   .style('font-size', 12)
+    layer1
+      .selectAll('.label')
+      .data(nodes)
+      .enter()
+      .append('text')
+      .attr('class', 'label')
+      .attr('x', d => xScale(d.x))
+      .attr('y', d => yScale(d.layer) + 10)
+      .html(d => d.label)
+      .style('align', 'center')
+      .style('shape-rendering', 'crisp-edges')
+      .style('stroke', 'none')
+      .style('font-size', 12)
   }
   
   function drawBrush(nodes, edges) {
