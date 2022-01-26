@@ -32,11 +32,13 @@ function click_crossings() {
 }
 
 function click_k_crossings() {
-    k_CR_maxSpan(graph, 1, 1);
+    //k_CR_maxSpan(graph, 1, 1);
     //k_CR_maxSpanNodeCount(graph, 1, 1);
-    //k_CR_maxCross(graph, 1, 1);
+    k_CR_maxCross(graph, 1, 1);
     console.log(graph.layers)
-    barycenter(graph.layers, 10);
+    //barycenter(graph.layers, 10);
+    posByOrder(graph.layers[0])
+    posByOrder(graph.layers[1])
 
     var crossings = numberCrossings(graph.layers);
     console.log(crossings)
