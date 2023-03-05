@@ -18,4 +18,10 @@ The user can highlight the adjacent edges by clicking on a particular vertex in 
 ![The system highlights the adjacent edges when the user clicks on a vertex (in this figure the user clicks the vertex with the label ``basophil'').](./figures/highlight_edges_new.png)
 
 
+We keep the label texts less than or equal to ten characters. If a label is longer then we show the first ten characters and truncate the rest. If the user puts the mouse over the label or the corresponding vertex, a pop-up message will show the full label. If the user moves out the mouse, the message will be removed too. Besides showing the full label, we also provide other useful information, e.g., the degree and ID of the vertex.
+
+
+![A pop-up message showing the full label, and other related information.](./figures/popup.png)
+
+
 The underlying algorithm is described in [this paper](https://arxiv.org/pdf/2301.10872.pdf).
