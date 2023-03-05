@@ -10,6 +10,9 @@ Press the "Split" button to split some vertices and generate a crossing-free dra
 
 The right output interface is interactive; the user can see further details using different interactions. 
 When the graph is large the user can scroll up and down to see different parts of the layout. 
+
+![zoom_in](./figures/zoom_in.png)
+
 The user can highlight the adjacent edges by clicking on a particular vertex in case of dense layouts.
 
 ![The system highlights the adjacent edges when the user clicks on a vertex (in this figure the user clicks the vertex with the label ``basophil'').](./figures/highlight_edges_new.png)
