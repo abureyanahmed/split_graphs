@@ -181,8 +181,17 @@ function k_CR_maxSpanNodeCount(graph, L, K) {
   layer_0 = graph.layers[L - 1];
 
   posByOrder(layer_1);
-  posByNeighboursAbove(layer_0);
 
+  layer_0.forEach(node => {
+    var barySum = 0;
+ 
+    node.nAbove.forEach(nB => {
+          barySum += nB['x'];
+      });
+
+    node['barySum'] = barySum;
+    node['x'] = barySum / node.nAbove.length;
+  });
   var maxSpan = 0;
   var maxNode = 0;
 
@@ -244,23 +253,25 @@ function k_CR_maxSpanNodeCount(graph, L, K) {
     right.nAbove = [];
     right.nBelow = [];
 
+    var rightP = 0;
+    var leftP = 0;
+
     maxNode.nAbove.forEach((n, i) => {
         if(i < bestIndex) {
           left.nAbove.push(n);
           n.nBelow = arrayRemove(n.nBelow, maxNode);
           n.nBelow.push(left)
+          leftP += n.x;
         } else {
           right.nAbove.push(n);
           n.nBelow = arrayRemove(n.nBelow, maxNode);
           n.nBelow.push(right);
+          rightP += n.x;
         }
     });
 
-    maxNode.nBelow.forEach(n => {
-      left.nBelow.push(n);
-      right.nBelow.push(n);
-    });
-
+    left.x = leftP / left.nAbove.length;
+    right.x = rightP / right.nAbove.length;
     // console.log(sqSpan, bestIndex)
     // console.log(left)
     // console.log(right)
@@ -275,6 +286,8 @@ function k_CR_maxSpanNodeCount(graph, L, K) {
     layer_0.push(left);
     layer_0.push(right);
   }
+
+  layer_0.sort((a,b) => a['x'] - b['x']);
 
   graph.layers[L] = layer_1;
   graph.layers[L - 1] = layer_0;
@@ -304,7 +317,7 @@ function k_CR_maxSpan(graph, L, K) {
 
 
   var maxSpan = 0;
-  var maxNode = 0;
+  var maxNode = undefined;
 
   for(var k = 0; k < K; k++) {
     
@@ -328,6 +341,10 @@ function k_CR_maxSpan(graph, L, K) {
         maxNode = node;
       }
     });
+
+    if (maxNode == undefined) {
+      break;
+    }
 
     maxNode.nAbove.sort((a, b) => a['x'] - b['x'])
 
@@ -402,9 +419,9 @@ function k_CR_maxSpan(graph, L, K) {
     layer_0.push(right);
   }
 
-  console.log(layer_0)
+
   layer_0.sort((a,b) => a['x'] - b['x']);
-  console.log(layer_0)
+
 
   graph.layers[L] = layer_1;
   graph.layers[L - 1] = layer_0;
@@ -445,8 +462,8 @@ function k_CR_maxCross(graph, L, K) {
     var baryRight;
 
     layer_0.forEach((node, ind) => {
-          var leftBary = 0;
-          var rightBary = node['barySum'];
+          var leftBarySum = 0;
+          var rightBarySum = node['barySum'];
           //console.log('next', node['label']);
 
           if(node.nAbove.length <= 1){
@@ -455,13 +472,17 @@ function k_CR_maxCross(graph, L, K) {
 
           for(var i = 0; i < node.nAbove.length - 1; i++) {
             var nb = node.nAbove[i];
-            leftBary += nb['x'];
-            rightBary -= nb['x'];
 
+            leftBarySum += nb['x'];
+            rightBarySum -= nb['x'];
+            
             var crossingAvoid = 0;
-
+            
             var nLeft = i + 1;
             var nRight = node.nAbove.length - nLeft; 
+            
+            var leftBary = leftBarySum / nLeft;
+            var rightBary = rightBarySum / nRight;
 
             //console.log(node['x'], nb['x'], nLeft, nRight, leftBary / nLeft, rightBary / nRight)
             //console.log(nLeft, nRight);
@@ -474,24 +495,38 @@ function k_CR_maxCross(graph, L, K) {
             var curInd = ind + 1;
             var next = layer_0[curInd];
             
+            //console.log(rightBegin);
+            //console.log(rightEnd);
+
             while(curInd < layer_0.length && next['x'] < rightBary) {
-              //console.log(nRight);
+              //console.log('checking ', next['id']);
 
               next.nAbove.forEach(nextNb => {
                   var x = nextNb['x'];
 
-                  if (x <= rightBegin) {
+                  if (x < rightBegin) {
                     crossingAvoid += nRight;
-                    //console.log('avoiding all right crossings', nRight);
+                    //console.log('avoiding all right crossings', nRight, x, nextNb['id']);
                   } else if (x <= rightEnd) {
+                    //console.log('checking ', x)
+                    var l = 0;
+                    var r = 0;
                     for(var crossing = 0; crossing < nRight; crossing++) {
+                      //console.log('against', node.nAbove[nLeft + crossing]['x'])
                       if(x < node.nAbove[nLeft + crossing]['x']) {
-                        break;
+                        l += 1;
+                        // console.log('failed check', crossing)
+                        // break;
+                      } else if (x > node.nAbove[nLeft + crossing]['x']) {
+                        r += 1;
                       }
                     }
-
-                    crossingAvoid += nRight - 2 * (crossing + 1);
-                    //console.log('avoiding some right crossings', nRight - 2 * (crossing - 1));
+                    //console.log(crossing)
+                    //crossingAvoid += nRight - 2 * (crossing + 1);
+                    crossingAvoid += r - l;
+                    //console.log('avoiding some right crossings', r - l);
+                  } else {
+                    //console.log('above right end', x, nextNb['id'])
                   }
               });
 
@@ -501,24 +536,41 @@ function k_CR_maxCross(graph, L, K) {
             var curInd = ind - 1;
             next = layer_0[curInd];
 
+            //console.log(leftBegin);
+            //console.log(leftEnd);
+
             while(curInd >= 0 && next['x'] > leftBary) {
+              //console.log('checking ', next['id']);
 
               for(var j = next.nAbove.length -1; j >= 0; j--) {
                   var nextNb = next.nAbove[j];
                   var x = nextNb['x'];
-
-                  if (x >= leftBegin) {
+                  var l = 0;
+                  var r = 0;
+                  if (x > leftBegin) {
                     crossingAvoid += nLeft;
-                    //console.log('avoiding all left crossings', nLeft);
+                    //console.log('avoiding all left crossings', nLeft, x, nextNb['id']);
                   } else if (x >= leftEnd) {
+                    //console.log('checking ', x, nextNb['id'])
                     for(var crossing = 0; crossing < nLeft; crossing++) {
+                      //console.log('against', node.nAbove[nLeft - crossing - 1]['x'])
                       if(x > node.nAbove[nLeft - crossing - 1]['x']) {
-                        break;
+                        r += 1;
+                        // console.log('failed check', crossing)
+                        // break;
+                      } else if (x < node.nAbove[nLeft - crossing - 1]['x']) {
+                        l += 1;
                       }
-                    }
+                      // if(x > node.nAbove[nLeft - crossing - 1]['x']) {
+                      //   console.log('failed check', crossing)
+                      //   break;
+                      // }
+                    } 
 
-                    crossingAvoid += nLeft - 2 * (crossing + 1);
-                    //console.log('avoiding some left crossings', nLeft - 2 * (crossing - 1));
+                    crossingAvoid += l - r;
+                    //console.log('avoiding some left crossings', l-r);
+                  } else {
+                    //console.log('above right end', x, nextNb['id'])
                   }
               }
 
@@ -542,7 +594,7 @@ function k_CR_maxCross(graph, L, K) {
       break;
     }
 
-    console.log(maxNode.label, crossingAvoidsBest)
+    //console.log(maxNode.label, crossingAvoidsBest)
 
     left = Object.assign({}, maxNode);
     right = Object.assign({}, maxNode);
@@ -579,8 +631,8 @@ function k_CR_maxCross(graph, L, K) {
     right.barySum = baryRight * right.nAbove.length;
 
     // console.log(sqSpan, bestIndex)
-    console.log(left)
-    console.log(right)
+    //console.log(left)
+    //console.log(right)
     // console.log(maxNode);
 
     graph.nodes = arrayRemove(graph.nodes, maxNode);
@@ -593,10 +645,10 @@ function k_CR_maxCross(graph, L, K) {
     layer_0.unshift(right);
   }
 
-  console.log(layer_0)
+  //console.log(layer_0)
   layer_0.sort((a, b) => a['x'] - b['x']);
 
-  console.log(layer_0)
+  //console.log(layer_0)
   graph.layers[L] = layer_1;
   graph.layers[L - 1] = layer_0;
   redoEdges(graph);
