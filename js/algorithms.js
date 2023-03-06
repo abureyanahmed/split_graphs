@@ -17,7 +17,6 @@ function posByIndex(nodes) {
             if (index >= node['x']) {
                 node['x'] = index;
                 index++;
-                console.log('break')
                 break
             } else {
                 index++;
