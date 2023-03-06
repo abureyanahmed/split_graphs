@@ -17,7 +17,6 @@ function posByIndex(nodes) {
             if (index >= node['x']) {
                 node['x'] = index;
                 index++;
-                console.log('break')
                 break
             } else {
                 index++;
@@ -402,9 +401,9 @@ function k_CR_maxSpan(graph, L, K) {
     layer_0.push(right);
   }
 
-  console.log(layer_0)
+  //console.log(layer_0)
   layer_0.sort((a,b) => a['x'] - b['x']);
-  console.log(layer_0)
+  //console.log(layer_0)
 
   graph.layers[L] = layer_1;
   graph.layers[L - 1] = layer_0;
@@ -542,7 +541,7 @@ function k_CR_maxCross(graph, L, K) {
       break;
     }
 
-    console.log(maxNode.label, crossingAvoidsBest)
+    //console.log(maxNode.label, crossingAvoidsBest)
 
     left = Object.assign({}, maxNode);
     right = Object.assign({}, maxNode);
@@ -579,8 +578,8 @@ function k_CR_maxCross(graph, L, K) {
     right.barySum = baryRight * right.nAbove.length;
 
     // console.log(sqSpan, bestIndex)
-    console.log(left)
-    console.log(right)
+    //console.log(left)
+    //console.log(right)
     // console.log(maxNode);
 
     graph.nodes = arrayRemove(graph.nodes, maxNode);
@@ -593,10 +592,10 @@ function k_CR_maxCross(graph, L, K) {
     layer_0.unshift(right);
   }
 
-  console.log(layer_0)
+  //console.log(layer_0)
   layer_0.sort((a, b) => a['x'] - b['x']);
 
-  console.log(layer_0)
+  //console.log(layer_0)
   graph.layers[L] = layer_1;
   graph.layers[L - 1] = layer_0;
   redoEdges(graph);
