@@ -78,6 +78,8 @@ function click_experiment() {
     s1 = ''
     s2 = ''
     s3 = ''
+    ss1 = '\textit{CR-count}'
+    ss2 = '\textit{max-span}'
     max1 = 0;
     max2 = 0;
     max3 = 0;
@@ -87,7 +89,8 @@ function click_experiment() {
             graph = readGraphML(graph);
         }).then(function(){
 
-            var s = dataset + "; "
+            var sX = "xr;"
+            var sT = "t;0;"
 
             posByOrder(graph.layers[1]);
 
@@ -103,102 +106,115 @@ function click_experiment() {
             posByOrder(graph.layers[0])
 
             var crossings = numberCrossings(graph.layers);
-            s += String(crossings[0]) + ";"
-
+            sX += String(crossings[0]) + ";"
+            ss1 += dataset + '&' + String(crossings[0])
+            var startTime = performance.now();
+            
             for(k = 0; k < K; k++) {
-                var startTime = performance.now();
+                
                 k_CR_maxCross(graph, 1, 1);
                 var endTime = performance.now();
                 var time = endTime - startTime;
                 max1 = Math.max(max1, time);
                 posByOrder(graph.layers[0]);
                 var crossings = numberCrossings(graph.layers);
-                s += String(crossings[0]) + ";"
+                sX += String(crossings[0]) + ";";
+                sT += String(endTime - startTime) + ";";
             }
             
-            //console.log(s);
-            s1 += s + '\n';
+            //console.log("hello");
+            s1 += dataset + '\n' + sX + "\n" + sT + '\n';
         }).then(function(){
             console.log('max time CR count: ', max1)
-            console.log(s1);
-        });
-        
-        d3.json('./graphs/' + dataset + '.json').then(function(data){
-            graph = process_hubmap_data(data);
-            graph = readGraphML(graph);
+            //console.log(s1);
         }).then(function(){
+              
+		d3.json('./graphs/' + dataset + '.json').then(function(data){
+		    graph = process_hubmap_data(data);
+		    graph = readGraphML(graph);
+		}).then(function(){
 
-            var s = dataset + "; "
+		                var sX = "xr;"
+            var sT = "t;0;"
 
-            posByOrder(graph.layers[1]);
+		    posByOrder(graph.layers[1]);
 
-            graph.layers[0].forEach(node => {
-              var barySum = 0;
-              node.nAbove.forEach(nB => {
-                    barySum += nB['x'];
-                });
-              node['x'] = barySum / node.nAbove.length;
-            });
+		    graph.layers[0].forEach(node => {
+		      var barySum = 0;
+		      node.nAbove.forEach(nB => {
+		            barySum += nB['x'];
+		        });
+		      node['x'] = barySum / node.nAbove.length;
+		    });
 
-            graph.layers[0].sort((a,b) => a['x']- b['x']);
-            posByOrder(graph.layers[0])
+		    graph.layers[0].sort((a,b) => a['x']- b['x']);
+		    posByOrder(graph.layers[0])
 
-            var crossings = numberCrossings(graph.layers);
-            s += String(crossings[0]) + ";"
+		    var crossings = numberCrossings(graph.layers);
+		    sX += String(crossings[0]) + ";"
+		    var startTime = performance.now();
 
-            for(k = 0; k < K; k++) {
-                var startTime = performance.now();
-                k_CR_maxSpan(graph, 1, 1);
-                var endTime = performance.now();
-                var time = endTime - startTime;
-                max2 = Math.max(max2, time);
-                posByOrder(graph.layers[0]);
-                var crossings = numberCrossings(graph.layers);
-                s += String(crossings[0]) + ";"
-            }
+		    for(k = 0; k < K; k++) {
+		        k_CR_maxSpan(graph, 1, 1);
+		        var endTime = performance.now();
+		        var time = endTime - startTime;
+		        max2 = Math.max(max2, time);
+		        posByOrder(graph.layers[0]);
+		        var crossings = numberCrossings(graph.layers);
+			sX += String(crossings[0]) + ";";
+			sT += String(endTime - startTime) + ";";
+		    }
+		    
+		    //console.log("hello");
+		    s2 += dataset + '\n' + sX + "\n" + sT + '\n';
+		}).then(function(){
+		    console.log('max time max span: ', max2)
+		    //console.log(s2);
+	    }).then(function(){
+		
+			d3.json('./graphs/' + dataset + '.json').then(function(data){
+			    graph = process_hubmap_data(data);
+			    graph = readGraphML(graph);
+			}).then(function(){
+
+		                var sX = "xr;"
+            var sT = "t;0;"
+
+			    posByOrder(graph.layers[1]);
+
+			    graph.layers[0].forEach(node => {
+			      var barySum = 0;
+			      node.nAbove.forEach(nB => {
+				    barySum += nB['x'];
+				});
+			      node['x'] = barySum / node.nAbove.length;
+			    });
+
+			    graph.layers[0].sort((a,b) => a['x']- b['x']);
+			    posByOrder(graph.layers[0])
+
+			    var crossings = numberCrossings(graph.layers);
+			    sX += String(crossings[0]) + ";"
+			    var startTime = performance.now();
+
+			    for(k = 0; k < K; k++) {
+				k_CR_maxSpanNodeCount(graph, 1, 1);
+				var endTime = performance.now();
+				posByOrder(graph.layers[0]);
+				var crossings = numberCrossings(graph.layers);
+					sX += String(crossings[0]) + ";";
+					sT += String(endTime - startTime) + ";";
+				    }
             
-            //console.log(s);
-            s2 += s + '\n';
-        }).then(function(){
-            console.log('max time max span: ', max2)
-            console.log(s2);
-    });
-        
-        d3.json('./graphs/' + dataset + '.json').then(function(data){
-            graph = process_hubmap_data(data);
-            graph = readGraphML(graph);
-        }).then(function(){
-
-            var s = dataset + "; "
-
-            posByOrder(graph.layers[1]);
-
-            graph.layers[0].forEach(node => {
-              var barySum = 0;
-              node.nAbove.forEach(nB => {
-                    barySum += nB['x'];
-                });
-              node['x'] = barySum / node.nAbove.length;
-            });
-
-            graph.layers[0].sort((a,b) => a['x']- b['x']);
-            posByOrder(graph.layers[0])
-
-            var crossings = numberCrossings(graph.layers);
-            s += String(crossings[0]) + ";"
-
-            for(k = 0; k < K; k++) {
-                k_CR_maxSpanNodeCount(graph, 1, 1);
-                posByOrder(graph.layers[0]);
-                var crossings = numberCrossings(graph.layers);
-                s += String(crossings[0]) + ";"
-            }
-            
-            //console.log(s);
-            s3 += s + '\n';
-        }).then(function(){
-            console.log(s3);
-    });
+			    //console.log("hello");
+			    s3 += dataset + '\n' + sX + "\n" + sT + '\n';
+			}).then(function(){
+			    console.log(s1);
+			    console.log(s2);
+			    console.log(s3);
+		    });
+		    });
+		    });
 });
 
 

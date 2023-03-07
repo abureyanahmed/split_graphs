@@ -233,7 +233,7 @@ function k_CR_maxSpanNodeCount(graph, L, K) {
 
     for(var i = 1; i < l; i++) {
       var val = maxNode.nAbove[i]['x'] - maxNode.nAbove[i - 1]['x']
-      console.log(val)
+      //console.log(val)
 
       if(sqSpan < val) {
         sqSpan = val;
@@ -291,7 +291,7 @@ function k_CR_maxSpanNodeCount(graph, L, K) {
   graph.layers[L] = layer_1;
   graph.layers[L - 1] = layer_0;
   redoEdges(graph);
-  console.log(layer_0,graph)
+  //console.log(layer_0,graph)
 
   return graph
 }
